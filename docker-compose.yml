@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  clearquote-api:
+    build: .
+    container_name: clearquote-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+      - DB_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-clearquote}
+      - RUN_DB_SEED=${RUN_DB_SEED:-1}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+    command: >
+      sh -c "
+      echo 'Waiting for Postgres...';
+      sleep 5;
+      if [ \"$RUN_DB_SEED\" = '1' ]; then
+        echo 'Seeding database...';
+        python -m scripts.seed_dataset;
+      fi;
+      echo 'Starting API...';
+      uvicorn main:app --host 0.0.0.0 --port 8000
+      "
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: clearquote-postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-clearquote}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
