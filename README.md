@@ -16,7 +16,6 @@ A production-ready FastAPI application that converts natural language questions 
 - [Usage Examples](#-usage-examples)
 - [Development](#-development)
 - [Docker Deployment](#-docker-deployment)
-- [Troubleshooting](#-troubleshooting)
 
 ---
 
@@ -717,27 +716,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **Google Gemini**: Powerful AI language model
 - **PostgreSQL**: Robust relational database
 - **SQLAlchemy**: Excellent ORM with async support
-
----
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/clearquote/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/clearquote/discussions)
-- **Email**: support@clearquote.example.com
-
----
-
-## 🗺 Roadmap
-
-- [ ] Add Redis caching for common queries
-- [ ] Implement query history and analytics
-- [ ] Add more AI models (Claude, GPT-4)
-- [ ] Create frontend dashboard
-- [ ] Add user authentication
-- [ ] Implement rate limiting
-- [ ] Add OpenAPI client generation
-
 ---
 
 **Made with ❤️ for intelligent vehicle damage management**
