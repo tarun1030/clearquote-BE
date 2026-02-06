@@ -13,6 +13,7 @@ A production-ready FastAPI application that converts natural language questions 
 - [Configuration](#-configuration)
 - [API Endpoints](#-api-endpoints)
 - [Database Schema](#-database-schema)
+- [Dataset Files](#-dataset-files)
 - [Usage Examples](#-usage-examples)
 - [Development](#-development)
 - [Docker Deployment](#-docker-deployment)
@@ -111,6 +112,11 @@ clearquote/
 ├── schema_context.py          # Database schema for AI context
 ├── schemas.py                 # Pydantic request/response models
 │
+├── ClearQuote Sample Dataset.xlsx - damage_detections.csv
+├── ClearQuote Sample Dataset.xlsx - quotes.csv
+├── ClearQuote Sample Dataset.xlsx - repairs.csv
+├── ClearQuote Sample Dataset.xlsx - vehicle_cards.csv
+│
 ├── routes/
 │   ├── query_routes.py        # /api/query, /api/debug, /api/examples
 │   ├── config_routes.py       # /api/config/* (API key, DB URL)
@@ -167,7 +173,7 @@ GRANT ALL PRIVILEGES ON DATABASE clearquote TO postgres;
 
 **Or use the provided Docker container:**
 ```bash
-docker-compose up -d postgres
+docker compose up -d postgres
 ```
 
 #### 5. Configure Environment
@@ -202,20 +208,87 @@ RUN_DB_SEED=1
 ```
 
 #### 2. Build and Run
+
+**Windows (PowerShell):**
+```powershell
+$env:RUN_DB_SEED="1"
+docker compose up --build
+```
+
+**macOS / Linux (Bash/Zsh):**
 ```bash
-docker-compose up --build
+export RUN_DB_SEED=1
+docker compose up --build
+```
+
+**Alternative (Using .env file - All OS):**
+```bash
+docker compose up --build
 ```
 
 The API will be available at: http://localhost:8000
 
 #### 3. Stop Containers
 ```bash
-docker-compose down
+docker compose down
 ```
 
 #### 4. Reset Everything (including data)
 ```bash
-docker-compose down -v
+docker compose down -v
+```
+
+---
+
+## 📦 Dataset Files
+
+The project includes sample CSV datasets located in the `datasets/` directory (or in the root if using a different structure):
+
+```
+clearquote-BE/
+├── ClearQuote Sample Dataset.xlsx - damage_detections.csv
+├── ClearQuote Sample Dataset.xlsx - quotes.csv
+├── ClearQuote Sample Dataset.xlsx - repairs.csv
+└── ClearQuote Sample Dataset.xlsx - vehicle_cards.csv
+```
+
+These files are automatically loaded when `RUN_DB_SEED=1` is set during Docker startup or when running the seeding script manually:
+
+**Manual seeding:**
+```bash
+python scripts/seed_dataset.py
+```
+
+**Docker seeding (automatic):**
+```bash
+# Windows (PowerShell)
+$env:RUN_DB_SEED="1"
+docker compose up --build
+
+# macOS / Linux
+export RUN_DB_SEED=1
+docker compose up --build
+```
+
+### Dataset Structure
+
+| File | Description | Records |
+|------|-------------|---------|
+| `vehicle_cards.csv` | Vehicle information (type, manufacturer, model, year) | Sample vehicles |
+| `damage_detections.csv` | Detected damages (panel, type, severity, confidence) | Linked to vehicles |
+| `repairs.csv` | Repair actions and costs | Linked to vehicles |
+| `quotes.csv` | Cost estimates | Linked to vehicles |
+
+### Dataset File Paths
+
+Update the seeding script (`scripts/seed_dataset.py`) to reference these file paths:
+
+```python
+# File paths relative to project root
+VEHICLE_CARDS_CSV = "ClearQuote Sample Dataset.xlsx - vehicle_cards.csv"
+DAMAGE_DETECTIONS_CSV = "ClearQuote Sample Dataset.xlsx - damage_detections.csv"
+REPAIRS_CSV = "ClearQuote Sample Dataset.xlsx - repairs.csv"
+QUOTES_CSV = "ClearQuote Sample Dataset.xlsx - quotes.csv"
 ```
 
 ---
@@ -638,7 +711,7 @@ services:
 
 ```bash
 # Check PostgreSQL is running
-docker-compose ps
+docker compose ps
 
 # Test connection manually
 psql -h localhost -U postgres -d clearquote
@@ -679,8 +752,8 @@ postgresql://user:p@ssw0rd!@host:5432/db
 sudo chown -R $(whoami):$(whoami) ./data
 
 # Or reset volumes
-docker-compose down -v
-docker-compose up --build
+docker compose down -v
+docker compose up --build
 ```
 
 ---
